@@ -45,17 +45,14 @@ def completer(Aut):
 				Aut.add_transition((state, alpha, puit))
 
 
-def cartesien(A, B):
-	return [(x,y) for x in A for y in B]
-
 # Aut1 et Aut2 doivent etre complet et deterministe 
 def union(Aut1, Aut2):
 
 	epsilons = Aut1.get_epsilons().union(Aut2.get_epsilons())
 	states = ()
-	initiaux = ()#cartesien(Aut1.get_initial_states(), Aut2.get_initial_states())
-	finaux = ()#cartesien(Aut1.get_final_states(), Aut2.get_final_states())
-	transitions = automaton.pretty_set()
+	initiaux = ()
+	finaux = ()
+	transitions = ()
 	
 	print states
 
@@ -79,11 +76,7 @@ def union(Aut1, Aut2):
 	#Ajout des transitions
 	for state in AutUnion.get_states():
 		for alpha in AutUnion.get_alphabet():
-			
 			successeur = (Aut1.delta(alpha), Aut2.delta(alpha))
-
-			
-
 			AutUnion.add_transition((state, alpha, successeur))
 
 	return AutUnion
