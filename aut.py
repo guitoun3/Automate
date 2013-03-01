@@ -68,9 +68,7 @@ def union(Aut1, Aut2):
 			AutUnion.add_state(state)
 
 			#Ajout des etats finaux
-			if x in Aut1.get_final_states():
-				AutUnion.add_final_state(state)
-			if y in Aut2.get_final_states():
+			if x in Aut1.get_final_states() or y in Aut2.get_final_states():
 				AutUnion.add_final_state(state)
 
 	#Ajout des etats initiaux
