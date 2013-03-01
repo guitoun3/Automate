@@ -28,7 +28,7 @@ aut2 = automaton.automaton(
 
 # Le puits n'est cree que si l'automate n'est pas deja complet
 def completer(Aut):
-	puit = Aut.get_maximal_id()+1
+	puits = Aut.get_maximal_id()+1
 	isComplet = True
 
 	for state in Aut.get_states():
@@ -39,21 +39,20 @@ def completer(Aut):
 				if isComplet == True:
 					isComplet = False
 
-					Aut.add_state(puit)
+					Aut.add_state(puits)
 
-				Aut.add_transition((state, alpha, puit))
+				Aut.add_transition((state, alpha, puits))
 
 
 # Aut1 et Aut2 doivent etre complets et deterministes 
 def union(Aut1, Aut2):
 
-	epsilons = ()
 	states = ()
 	initiaux = ()
 	finaux = ()
 	transitions = ()
 	
-	AutUnion = automaton.automaton(epsilons, states, initiaux, finaux, transitions)
+	AutUnion = automaton.automaton((), states, initiaux, finaux, transitions)
 
 	#Definition de l'epsilon
 	AutUnion.add_epsilon_character(list(Aut1.get_epsilons())[0])
