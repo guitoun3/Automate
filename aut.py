@@ -102,9 +102,66 @@ def union(Aut1, Aut2):
 
 	return AutUnion
 
+def intersection(Aut1, Aut2):
+
+	states = ()
+	initiaux = ()
+	finaux = ()
+	transitions = ()
+	
+	AutInter = automaton.automaton((), states, initiaux, finaux, transitions)
+
+	#Definition de l'epsilon
+	AutInter.add_epsilon_character(list(Aut1.get_epsilons())[0])
+
+	#Ajout des caracteres dans l'alphabet
+	for a in Aut1.get_alphabet():
+		AutInter.add_character(a)
+
+	#Ajout des etats
+	for x in Aut1.get_states():
+		for y in Aut2.get_states():
+			state = automaton.pretty_set((x,y))
+			AutInter.add_state(state)
+
+			#Ajout des etats finaux
+			if x in Aut1.get_final_states() and y in Aut2.get_final_states():
+				AutInter.add_final_state(state)
+
+	#Ajout des etats initiaux
+	state = automaton.pretty_set((list(Aut1.get_initial_states())[0], list(Aut2.get_initial_states())[0]))
+	AutInter.add_initial_state(state)
+
+
+	#Ajout des transitions
+	for alpha in AutInter.get_alphabet():
+		#Ne traite pas les epsilons transitions
+		if alpha in AutInter.get_epsilons():
+			continue
+
+		for stateA1 in Aut1.get_states():
+			for stateA2 in Aut2.get_states():
+
+				#Calcule les etats accessibles depuis les etats stateA1 et stateA2
+				successeurA1 = list(Aut1.delta(alpha, [stateA1]))
+				successeurA2 = list(Aut2.delta(alpha, [stateA2]))
+
+				#Si pour le meme caractere un etat est accessible dans A1 
+				#et un etat est accessible dans A2 on ajoute une transition
+				if len(successeurA1) > 0 and len(successeurA2) > 0:
+
+					state = automaton.pretty_set((stateA1, stateA2)) #Etat avant transition
+					#A1 et A2 sont deterministes
+					#ils ne doivent posseder qu'une valeur => [0]
+					successeur = automaton.pretty_set((successeurA1[0], successeurA2[0])) #Etat apres transition
+
+					AutInter.add_transition((state, alpha, successeur))
+
+	return AutInter
 
 
 aut3 = union(aut1, aut2)
+aut4 = intersection(aut1, aut2)
 
 
-aut3.display()
+aut4.display()
