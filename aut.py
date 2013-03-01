@@ -20,14 +20,17 @@ aut2 = automaton.automaton(
 	finals = [2],
 	transitions = [
 		(1, 'a', 1), (1, 'b', 1), (1, 'c', 2), 
-		(2, 'a', 2), (2, 'a', 2), (2, 'a', 2)
+		(2, 'a', 2), (2, 'b', 2), (2, 'c', 2)
 		]
 
 	)
 
 
 # Le puits n'est cree que si l'automate n'est pas deja complet
+<<<<<<< HEAD
+=======
 
+>>>>>>> f1d0f339e5ab82dc84e8ff81c3688cc0a4c511b8
 def completer(Aut):
 	puit = Aut.get_maximal_id()+1
 	isComplet = True
@@ -48,41 +51,67 @@ def completer(Aut):
 # Aut1 et Aut2 doivent etre complets et deterministes 
 def union(Aut1, Aut2):
 
-	epsilons = Aut1.get_epsilons().union(Aut2.get_epsilons())
+	epsilons = ()
 	states = ()
 	initiaux = ()
 	finaux = ()
 	transitions = ()
 	
-	print states
-
 	AutUnion = automaton.automaton(epsilons, states, initiaux, finaux, transitions)
+
+	#Definition de l'epsilon
+	AutUnion.add_epsilon_character(list(Aut1.get_epsilons())[0])
+
+	#Ajout des caracteres dans l'alphabet
+	for a in Aut1.get_alphabet():
+		AutUnion.add_character(a)
 
 	#Ajout des etats
 	for x in Aut1.get_states():
 		for y in Aut2.get_states():
-			AutUnion.add_state((x,y))
+			state = automaton.pretty_set((x,y))
+			AutUnion.add_state(state)
 
 			#Ajout des etats finaux
 			if x in Aut1.get_final_states():
-				AutUnion.add_final_state((x,y))
+				AutUnion.add_final_state(state)
 			if y in Aut2.get_final_states():
-				AutUnion.add_final_state((x,y))
+				AutUnion.add_final_state(state)
 
 	#Ajout des etats initiaux
-	AutUnion.add_initial_state((Aut1.get_initial_states(), Aut2.get_initial_states()))
+	state = automaton.pretty_set((list(Aut1.get_initial_states())[0], list(Aut2.get_initial_states())[0]))
+	AutUnion.add_initial_state(state)
 
 
 	#Ajout des transitions
-	for state in AutUnion.get_states():
-		for alpha in AutUnion.get_alphabet():
-			successeur = (Aut1.delta(alpha), Aut2.delta(alpha))
-			AutUnion.add_transition((state, alpha, successeur))
+	for alpha in AutUnion.get_alphabet():
+		#Ne traite pas les epsilons transitions
+		if alpha in AutUnion.get_epsilons():
+			continue
+
+		for stateA1 in Aut1.get_states():
+			for stateA2 in Aut2.get_states():
+
+				#Calcule les etats accessibles depuis les etats stateA1 et stateA2
+				successeurA1 = list(Aut1.delta(alpha, [stateA1]))
+				successeurA2 = list(Aut2.delta(alpha, [stateA2]))
+
+				#Si pour le meme caractere un etat est accessible dans A1 
+				#et un etat est accessible dans A2 on ajoute une transition
+				if len(successeurA1) > 0 and len(successeurA2) > 0:
+
+					state = automaton.pretty_set((stateA1, stateA2)) #Etat avant transition
+					#A1 et A2 sont deterministes
+					#ils ne doivent posseder qu'une valeur => [0]
+					successeur = automaton.pretty_set((successeurA1[0], successeurA2[0])) #Etat apres transition
+
+					AutUnion.add_transition((state, alpha, successeur))
 
 	return AutUnion
 
-aut3 = union(aut1, aut2)
 
+
+aut3 = union(aut1, aut2)
 
 
 aut3.display()
