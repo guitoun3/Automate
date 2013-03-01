@@ -27,10 +27,6 @@ aut2 = automaton.automaton(
 
 
 # Le puits n'est cree que si l'automate n'est pas deja complet
-<<<<<<< HEAD
-=======
-
->>>>>>> f1d0f339e5ab82dc84e8ff81c3688cc0a4c511b8
 def completer(Aut):
 	puit = Aut.get_maximal_id()+1
 	isComplet = True
