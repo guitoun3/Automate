@@ -158,10 +158,20 @@ def intersection(Aut1, Aut2):
 					AutInter.add_transition((state, alpha, successeur))
 
 	return AutInter
+def miroir(Aut):
+	states = Aut.get_states()
+	initiaux = Aut.get_final_states()
+	finaux = Aut.get_initial_states()
+	transitions = ()
+	AutMir = automaton.automaton((), states, initiaux, finaux, transitions)
+	for t in Aut.get_transitions():
+		AutMir.add_transition((t[2],t[1],t[0]))
 
+	return AutMir
 
 aut3 = union(aut1, aut2)
 aut4 = intersection(aut1, aut2)
+aut5 = miroir(aut1)
 
-
-aut4.display()
+aut1.display()
+aut5.display()
