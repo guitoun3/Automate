@@ -25,6 +25,18 @@ aut2 = automaton.automaton(
 
 	)
 
+autNonDeter = automaton.automaton(
+	epsilons = ['0'],
+	states = [1,2],
+	initials = [1],
+	finals = [2],
+	transitions = [
+		(1, 'a', 1), (1, 'b', 1),
+		(1, 'a', 2)
+		]
+
+	)
+
 
 # Le puits n'est cree que si l'automate n'est pas deja complet
 def completer(Aut):
@@ -158,20 +170,85 @@ def intersection(Aut1, Aut2):
 					AutInter.add_transition((state, alpha, successeur))
 
 	return AutInter
+
 def miroir(Aut):
+	alphabet = Aut.get_alphabet()
+	epsilons = Aut.get_epsilons()
 	states = Aut.get_states()
 	initiaux = Aut.get_final_states()
 	finaux = Aut.get_initial_states()
 	transitions = ()
-	AutMir = automaton.automaton((), states, initiaux, finaux, transitions)
+	AutMir = automaton.automaton(alphabet, epsilons, states, initiaux, finaux, transitions)
 	for t in Aut.get_transitions():
 		AutMir.add_transition((t[2],t[1],t[0]))
 
 	return AutMir
 
+
+def determinisation(Aut):
+	initial = Aut.get_initial_states()
+	finaux = ()
+	alphabet = Aut.get_alphabet()
+	transitions = ()
+	epsilons = Aut.get_epsilons()
+
+	#Ajout de l'etat initial
+	states = set(initial)
+	states.add((1,2))
+	print states
+
+	for buildState in states:
+		print "\t", buildState
+		for st in [buildState]:
+			print "\t\t", st
+			for alpha in alphabet:
+				newState = list()
+				print "\t\t\t A = ", alpha , " : " ,Aut.delta(alpha, [st])
+				for access_state in list(Aut.delta(alpha, [st])):
+					print "\t\t\t\t add = ", access_state
+					newState.append(access_state)
+
+				print newState
+				print states
+					
+				#if newState not in states:
+				print "insert", newState
+				states.add(frozenset(newState))
+
+	print states
+
+
+	"""
+	states = set(initial)
+	for buildState in states:
+		print "\t", buildState
+		for st in [buildState]:
+			print "\t\t", st
+			for alpha in alphabet:
+				newState = list()
+				print "\t\t\t A = ", alpha , " : " ,Aut.delta(alpha, [st])
+				for access_state in list(Aut.delta(alpha, [st])):
+					print "\t\t\t\t add = ", access_state
+					newState.append(access_state)
+
+				print newState
+				print states
+					
+				#if newState not in states:
+				print "insert", newState
+				states.add(frozenset(newState))
+
+	print states
+	"""			
+
+
+
+
 aut3 = union(aut1, aut2)
 aut4 = intersection(aut1, aut2)
 aut5 = miroir(aut1)
+aut6 = determinisation(autNonDeter)
 
-aut1.display()
-aut5.display()
+
+#aut1.display()
+#aut5.display()
