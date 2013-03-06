@@ -213,11 +213,6 @@ def determinisation(Aut):
 		initial.append(my_initial)
 	else:
 		initial.append(my_initial[0])
-
-
-	"""
-	Ajout de l'etat initial compose de l'ensemble des etats initiaux de Aut
-	"""
 	
 	#Copie la variable de initial au lieu d'utiliser son pointeur
 	states = initial[:]
@@ -241,7 +236,6 @@ def determinisation(Aut):
 				new_state = new_state[0]
 
 		if new_state not in states:			
-			#states = states + (new_state,)
 			states.append(new_state)
 
 		i += 1
@@ -273,7 +267,6 @@ def determinisation(Aut):
 						state_arrive.append(access_state)
 
 			if len(state_arrive) > 0:
-				
 				#Evite d'avoir un state_arrive de la forme (1,) quand l'etat n'est pas un etat "compose"
 				if len(state_arrive) > 1:
 					state_arrive = tuple(state_arrive)
