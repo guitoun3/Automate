@@ -37,6 +37,18 @@ autNonDeter = automaton.automaton(
 
 	)
 
+aut11fig3 = automaton.automaton(
+	epsilons = ['0'],
+	states = [1,2,4],
+	initials = [1,4],
+	finals = [2,4],
+	transitions = [
+		(1, 'a', 2), (1, 'b', 4),
+		(2, 'a', 4),
+		(4, 'a', 4)
+		]
+
+	)
 
 # Le puits n'est cree que si l'automate n'est pas deja complet
 def completer(Aut):
@@ -55,7 +67,7 @@ def completer(Aut):
 
 				Aut.add_transition((state, alpha, puits))
 
-
+	return Aut
 # Aut1 et Aut2 doivent etre complets et deterministes 
 def union(Aut1, Aut2):
 
@@ -193,14 +205,23 @@ def determinisation(Aut):
 	epsilons = Aut.get_epsilons()
 
 	#Creation de l'etat initial
+	my_initial = ()
 	for initState in Aut.get_initial_states():
-		initial.append(initState)
+		my_initial = my_initial +(initState,)
+	
+	if len(my_initial) > 1:
+		initial.append(my_initial)
+	else:
+		initial.append(my_initial[0])
+
 
 	"""
 	Ajout de l'etat initial compose de l'ensemble des etats initiaux de Aut
 	"""
-	states = tuple(initial)
 	
+	#Copie la variable de initial au lieu d'utiliser son pointeur
+	states = initial[:]
+
 	#Ajout des nouveaux etats
 	i = 0
 	while i < len(states):
@@ -208,24 +229,30 @@ def determinisation(Aut):
 		if type(setState).__name__ == 'int':
 			setState = [setState]
 
-		new_state = ()
+		new_state = tuple()
 
 		for state in setState:
 			for alpha in alphabet:
-				for access_state in Aut.delta(alpha, [state]):
+				for access_state in Aut.delta(alpha, [state], True):
 					if access_state not in new_state:
 						new_state = new_state + (access_state,)
+		
+		if len(new_state) == 1:
+				new_state = new_state[0]
 
-		if new_state not in states:
-			states = states + (new_state,)
-	
+		if new_state not in states:			
+			#states = states + (new_state,)
+			states.append(new_state)
+
 		i += 1
-
 
 	#Ajout des etats finaux
 	for setState in states:
 		if type(setState).__name__ == 'int':
-			setState = [setState]
+			if setState in Aut.get_final_states():
+				finaux.append(setState)
+
+			continue
 
 		for state in setState:
 			if state in Aut.get_final_states():
@@ -233,29 +260,29 @@ def determinisation(Aut):
 
 	#Ajout des transitions
 	for setState in states:
+		setStateC = setState
 		if type(setState).__name__ == 'int':
 			setStateC = [setState]
 
-		for state in setStateC:
-			for alpha in alphabet:
-				state_arrive = []
+		for alpha in alphabet:
+			state_arrive = []
 
+			for state in setStateC:
 				for access_state in Aut.delta(alpha, [state], True):
-					state_arrive.append(access_state)
+					if access_state not in state_arrive:
+						state_arrive.append(access_state)
 
-				if len(state_arrive) > 0:
-					
-					#Evite d'avoir un state_arrive de la forme (1,) quand l'etat n'est pas un etat "compose"
-					if len(state_arrive) > 1:
-						state_arrive = tuple(state_arrive)
-					else:
-						state_arrive = state_arrive[0]
+			if len(state_arrive) > 0:
+				
+				#Evite d'avoir un state_arrive de la forme (1,) quand l'etat n'est pas un etat "compose"
+				if len(state_arrive) > 1:
+					state_arrive = tuple(state_arrive)
+				else:
+					state_arrive = state_arrive[0]
 
-					transitions.append((setState, alpha, state_arrive))
+				transitions.append((setState, alpha, state_arrive))
 
-
-
-	return automaton.automaton(alphabet, epsilons, (), initial, finaux, transitions)
+	return automaton.automaton(alphabet, epsilons, states, initial, finaux, transitions)
 	
 
 aut3 = union(aut1, aut2)
@@ -263,6 +290,9 @@ aut4 = intersection(aut1, aut2)
 aut5 = miroir(aut1)
 aut6 = determinisation(autNonDeter)
 
-aut6.display()
+aut11fig3 = determinisation(aut11fig3)
+aut11fig3.display()
+
+#aut6.display()
 #aut1.display()
 #aut5.display()
