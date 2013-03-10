@@ -323,7 +323,26 @@ def complement(Aut):
 
 	return automaton.automaton(Aut.get_alphabet(), Aut.get_epsilons(), Aut.get_states(), Aut.get_initial_states(), finaux, Aut.get_transitions())
 
+def classe_valide(Aut, classe):
+	for c in Aut.get_alphabet()
+		dest = Aut.delta(a, classe[0])
+		for e in classe:
+			if(Aut.delta(c, e) != dest):
+				print "Classe à découper !"
+				return False
+	return True
 
+def minimiser(Aut):
+	classes = list()
+	finaux = list()
+	nf = list()
+	for e in Aut.get_states()
+		if(aut.state_is_final(e)):
+			finaux.append(e)
+		else:
+			nf.append(e)
+	classes.append(finaux)
+	classes.append(nf)
 
 aut3 = union(aut1, aut2)
 aut4 = intersection(aut1, aut2)
