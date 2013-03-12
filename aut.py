@@ -337,8 +337,8 @@ def classeDe(state, classes):
 			return c
 
 def minimiser(Aut):
-	Aut = determinisation(Aut)
-	Aut = completer(Aut)
+	#Aut = determinisation(Aut)
+	#Aut = completer(Aut)
 	classes = list()
 	finaux = list()
 	nf = list()
@@ -354,11 +354,14 @@ def minimiser(Aut):
 		newclass = list()
 		for s in c:
 			for a in alphabet:
-				elem = list()
-				elem.append(list(c)[0])
-				if Aut.delta(a, s) in classeDe(Aut.delta(a, elem), classes):
+				l1=list()
+				l2=list()
+				l1.append(s)
+				l2.append(list(c)[0])
+				if Aut.delta(a, l1) in classeDe(Aut.delta(a, l2), classes):
 					continue
 				else:
+					c.remove(s)
 					newclass.append(s)
 					break
 		if newclass.len() > 0:
