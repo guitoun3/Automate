@@ -337,8 +337,8 @@ def classeDe(state, classes):
 			return c
 
 def minimiser(Aut):
-	#Aut = determinisation(Aut)
-	#Aut = completer(Aut)
+	Aut = determinisation(Aut)
+	Aut = completer(Aut)
 	classes = list()
 	finaux = list()
 	nf = list()
