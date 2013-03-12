@@ -60,6 +60,14 @@ complementAut = automaton.automaton(
 		]
 	)
 
+autNonMini = automaton.automaton(
+	epsilons =[],
+	states = [2,4,5,6,7,8],
+	initials = [1],
+	finals = [3],
+	transitions = [(1,'a',2), (1,'b',6), (2,'b',3), (3,'a',4), (3,'b',3), (4,'b',7), (5,'a',8), (5,'b',6), (6,'a',3), (6,'b',7), (7,'a',8), (8,'b',3)]
+	)
+
 # Le puits n'est cree que si l'automate n'est pas deja complet
 def completer(Aut):
 	puits = Aut.get_maximal_id()+1
@@ -323,38 +331,69 @@ def complement(Aut):
 
 	return automaton.automaton(Aut.get_alphabet(), Aut.get_epsilons(), Aut.get_states(), Aut.get_initial_states(), finaux, Aut.get_transitions())
 
-def classe_valide(Aut, classe):
-	for c in Aut.get_alphabet()
-		dest = Aut.delta(a, classe[0])
-		for e in classe:
-			if(Aut.delta(c, e) != dest):
-				print "Classe à découper !"
-				return False
-	return True
+def classeDe(state, classes):
+	for c in classes:
+		if state in c:
+			return c
 
 def minimiser(Aut):
+	Aut = determinisation(Aut)
+	Aut = completer(Aut)
 	classes = list()
 	finaux = list()
 	nf = list()
-	for e in Aut.get_states()
-		if(aut.state_is_final(e)):
+	alphabet = Aut.get_alphabet()
+	for e in Aut.get_states():
+		if Aut.state_is_final(e):
 			finaux.append(e)
 		else:
 			nf.append(e)
 	classes.append(finaux)
 	classes.append(nf)
+	for c in classes:
+		newclass = list()
+		for s in c:
+			for a in alphabet:
+				elem = list()
+				elem.append(list(c)[0])
+				if Aut.delta(a, s) in classeDe(Aut.delta(a, elem), classes):
+					continue
+				else:
+					newclass.append(s)
+					break
+		if newclass.len() > 0:
+			classes.append(newclass)
+	realStates = automaton.pretty_set()
+	realIni = automaton.pretty_set()
+	realFin = automaton.pretty_set()
+	realTrans = automaton.pretty_set()
+	for c in classes:
+		if Aut.state_is_final(list(c)[0]):
+			realFin.append(tuple(c))
+		else:
+			if Aut.state_is_initial(list(c)[0]):
+				realIni.append(tuple(c))
+			else:
+				realStates.append(tuple(c))
+		for a in alphabet:
+			realTrans.append(tuple(c), a, tuple(classeDe(Aut.delta(a, list(c)[0]), classes)))
+	return automaton.automaton(alphabet, set(), realStates, realIni, realFin, realTrans)
 
 aut3 = union(aut1, aut2)
 aut4 = intersection(aut1, aut2)
 aut5 = miroir(aut1)
-#aut6 = determinisation(autNonDeter)
+aut6 = minimiser(autNonMini)
+#aut7 = determinisation(autNonDeter)
 
 #aut11fig3 = determinisation(aut11fig3)
 #aut11fig3.display()
 
-complementAut = complement(complementAut)
-complementAut.display()
+#complementAut = complement(complementAut)
+#complementAut.display()
 
-#aut6.display()
 #aut1.display()
+
+autNonMini.display()
+#aut6.display()
+
 #aut5.display()
