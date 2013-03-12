@@ -351,17 +351,27 @@ def minimiser(Aut):
 	classes.append(finaux)
 	classes.append(nf)
 	for c in classes:
+		print "CLASS : contains " + str(c)
+		raw_input()
 		newclass = list()
 		for s in c:
+			print "\tChecking if state " + str(s) + ":"
 			for a in alphabet:
+				print "\t\tWith letter " + str(a) + ":"
+				raw_input()
 				l1=list()
 				l2=list()
 				l1.append(s)
 				l2.append(list(c)[0])
-				if Aut.delta(a, l1) in classeDe(list(Aut.delta(a, l2))[0], classes):
+				print "\t\t\tGoes in class of : " + str(list(c)[0]) + " (which is detected to be : " + str(classeDe(list(Aut.delta(a, l2))[0], classes)) + ")"
+				if list(Aut.delta(a, l1))[0] in classeDe(list(Aut.delta(a, l2))[0], classes):
+					print "\t\t\t... and it does !"
 					continue
 				else:
+					print "\t\t\t... and it does NOT ( it goes to state " + str(Aut.delta(a, l1))
 					c.remove(s)
+					print "\t\t\tRemoved " + str(s) + ", it now contains :" + str(c)
+					print "\t\t\tappending to the new class"
 					newclass.append(s)
 					break
 		if len(newclass) > 0:
