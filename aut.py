@@ -358,13 +358,13 @@ def minimiser(Aut):
 				l2=list()
 				l1.append(s)
 				l2.append(list(c)[0])
-				if Aut.delta(a, l1) in classeDe(Aut.delta(a, l2), classes):
+				if Aut.delta(a, l1) in classeDe(list(Aut.delta(a, l2))[0], classes):
 					continue
 				else:
 					c.remove(s)
 					newclass.append(s)
 					break
-		if newclass.len() > 0:
+		if len(newclass) > 0:
 			classes.append(newclass)
 	realStates = automaton.pretty_set()
 	realIni = automaton.pretty_set()
