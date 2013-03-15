@@ -392,6 +392,10 @@ def minimiser(Aut):
 			realTrans.append(tuple(c), a, tuple(classeDe(Aut.delta(a, list(c)[0]), classes)))
 	return automaton.automaton(alphabet, set(), realStates, realIni, realFin, realTrans)
 
+def expression_vers_automate(expr):
+
+	print "Hey"
+
 aut3 = union(aut1, aut2)
 aut4 = intersection(aut1, aut2)
 aut5 = miroir(aut1)
