@@ -354,7 +354,10 @@ def minimiser(Aut):
 		print "CLASS : contains " + str(c)
 		raw_input()
 		newclass = list()
-		for s in c:
+		classIterator = 0
+		while classIterator < len(c):
+			s=c[classIterator]
+			classIterator+=1
 			print "\tChecking if state " + str(s) + ":"
 			for a in alphabet:
 				print "\t\tWith letter " + str(a) + ":"
@@ -363,7 +366,7 @@ def minimiser(Aut):
 				l2=list()
 				l1.append(s)
 				l2.append(list(c)[0])
-				print "\t\t\tGoes in class of : " + str(list(c)[0]) + " (which is detected to be : " + str(classeDe(list(Aut.delta(a, l2))[0], classes)) + ")"
+				print "\t\t\tGoes in class of : " + str(list(Aut.delta(a, l2))[0]) + " (which is detected to be : " + str(classeDe(list(Aut.delta(a, l2))[0], classes)) + ")"
 				if list(Aut.delta(a, l1))[0] in classeDe(list(Aut.delta(a, l2))[0], classes):
 					print "\t\t\t... and it does !"
 					continue
@@ -372,10 +375,12 @@ def minimiser(Aut):
 					c.remove(s)
 					print "\t\t\tRemoved " + str(s) + ", it now contains :" + str(c)
 					print "\t\t\tappending to the new class"
+					if len(newclass) > 0:
+						classes.remove(newclass)
 					newclass.append(s)
+					classes.append(newclass)
+					classIterator-=1
 					break
-		if len(newclass) > 0:
-			classes.append(newclass)
 	realStates = automaton.pretty_set()
 	realIni = automaton.pretty_set()
 	realFin = automaton.pretty_set()
@@ -392,9 +397,9 @@ def minimiser(Aut):
 			realTrans.append(tuple(c), a, tuple(classeDe(Aut.delta(a, list(c)[0]), classes)))
 	return automaton.automaton(alphabet, set(), realStates, realIni, realFin, realTrans)
 
-aut3 = union(aut1, aut2)
-aut4 = intersection(aut1, aut2)
-aut5 = miroir(aut1)
+#aut3 = union(aut1, aut2)
+#aut4 = intersection(aut1, aut2)
+#aut5 = miroir(aut1)
 aut6 = minimiser(autNonMini)
 #aut7 = determinisation(autNonDeter)
 
@@ -406,7 +411,7 @@ aut6 = minimiser(autNonMini)
 
 #aut1.display()
 
-autNonMini.display()
-#aut6.display()
+#autNonMini.display()
+aut6.display()
 
 #aut5.display()
