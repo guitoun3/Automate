@@ -392,8 +392,6 @@ def minimiser(Aut):
 			realTrans.append(tuple(c), a, tuple(classeDe(Aut.delta(a, list(c)[0]), classes)))
 	return automaton.automaton(alphabet, set(), realStates, realIni, realFin, realTrans)
 
-
-expr = ["*", ["+", ["a", [".", ["*","b"], ["a"]]]]]
 def thomson_union(aut1, aut2):
 	new_aut1 = aut1.clone()
 	new_aut1 = new_aut1.get_renumbered_automaton()
@@ -431,7 +429,7 @@ def thomson_union(aut1, aut2):
 	new_aut.add_transition((list(new_aut1.get_final_states())[0], '0', new_final))
 	new_aut.add_transition((list(new_aut2.get_final_states())[0], '0', new_final))
 
-	return new_auth
+	return new_aut
 
 def thomson_produit(aut1, aut2):
 	new_aut1 = aut1.clone()
@@ -447,8 +445,8 @@ def thomson_produit(aut1, aut2):
 
 	new_aut = automaton.automaton(epsilons = ['0'],
 									states = [],
-									initials = [new_aut1.get_initial_states()],
-									finals = [new_aut2.get_final_states()],
+									initials = [list(new_aut1.get_initial_states())[0]],
+									finals = [list(new_aut2.get_final_states())[0]],
 									transitions = [])
 
 
@@ -498,12 +496,12 @@ def thomson_etoile(aut):
 	new_aut.add_transition((new_initial, '0', new_final))
 
 	#Copie des etats
-	new_auth.add_states(aut.get_states())
+	new_aut.add_states(aut.get_states())
 
 	#Copie des transitions
-	new_auth.add_transitions(aut.get_transitions())
+	new_aut.add_transitions(aut.get_transitions())
 
-	return new_auth
+	return new_aut
 
 
 def thomson_char(expr):
@@ -514,33 +512,72 @@ def thomson_char(expr):
 		finals = [2],
 		transitions = [(1, expr, 2)])
 
-#["*", ["+", ["a", [".", ["*","b"], ["a"]]]]] #(a+b*a)*
+
+def thomson_epsilon():
+	return automaton.automaton(
+		epsilons = ['0'],
+		states = [1,2],
+		initials = [1],
+		finals = [2],
+		transitions = [(1, '0', 2)])
+
+expr = ["*", ["+", ["a", [".", [["*", "b"], "a"]]]]]  #(a+b*a)
 def expression_vers_automate(expr):
 	i = 1
 
-	"""
-	Il va falloir magouiller du recursif ici...
-	"""
-
 	for item in expr:
-		if type(item) == list:
-			print expression_vers_automate(item)
-		else:
+		if type(item) != list:
 			if item == "*":
-				return "Etoile sur ", expression_vers_automate(expr[i:])
+				"""
+				Traitement de l'etoile
+				"""
+				aut = expression_vers_automate(expr[i:][0])
+				return thomson_etoile(aut)
 			elif item == "+":
-				return "Union sur ", expression_vers_automate(expr[i:])
+				"""
+				Traitement de l'union
+				"""
+				arg = expr[i:][0]
+
+				aut = expression_vers_automate(arg[0])
+
+				"""
+				Parcours la liste pour unir les elements deux a deux
+				"""
+				for j in range(1, len(arg)):
+					if type(arg[j]) == list:
+						p_aut = expression_vers_automate(arg[j])
+					else:
+						p_aut = thomson_char(arg[j])
+
+					aut = thomson_union(aut, p_aut)
+
+				return aut
 			elif item == ".":
-				return "Produit sur ", expression_vers_automate(expr[i:])
+				#Traitement du produit
+				arg = expr[i:][0]
+
+				aut = expression_vers_automate(arg[0])
+
+				#Parcours la liste des elements pour effectuer le produit des automates deux a deux
+				for j in range(1, len(arg)):
+					if type(arg[j]) == list:
+						p_aut = expression_vers_automate(arg[j])
+					else:
+						p_aut = thomson_char(arg[j])
+
+					aut = thomson_produit(aut, p_aut)
+				return aut
 			else:
 				return thomson_char(item)
 
 		i += 1
 
 
-#http://blog.kerios.fr/cours/m2-ita/automate/algorithme-de-thompson/
 
-expression_vers_automate(expr)
+
+t = expression_vers_automate(expr)
+t.display()
 
 #aut3 = union(aut1, aut2)
 #aut4 = intersection(aut1, aut2)
