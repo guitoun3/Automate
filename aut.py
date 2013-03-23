@@ -351,30 +351,20 @@ def minimiser(Aut):
 	classes.append(finaux)
 	classes.append(nf)
 	for c in classes:
-		print "CLASS : contains " + str(c)
-		raw_input()
 		newclass = list()
 		classIterator = 0
 		while classIterator < len(c):
 			s=c[classIterator]
 			classIterator+=1
-			print "\tChecking if state " + str(s) + ":"
 			for a in alphabet:
-				print "\t\tWith letter " + str(a) + ":"
-				raw_input()
 				l1=list()
 				l2=list()
 				l1.append(s)
 				l2.append(list(c)[0])
-				print "\t\t\tGoes in class of : " + str(list(Aut.delta(a, l2))[0]) + " (which is detected to be : " + str(classeDe(list(Aut.delta(a, l2))[0], classes)) + ")"
 				if list(Aut.delta(a, l1))[0] in classeDe(list(Aut.delta(a, l2))[0], classes):
-					print "\t\t\t... and it does !"
 					continue
 				else:
-					print "\t\t\t... and it does NOT ( it goes to state " + str(Aut.delta(a, l1))
 					c.remove(s)
-					print "\t\t\tRemoved " + str(s) + ", it now contains :" + str(c)
-					print "\t\t\tappending to the new class"
 					if len(newclass) > 0:
 						classes.remove(newclass)
 					newclass.append(s)
@@ -385,17 +375,26 @@ def minimiser(Aut):
 	realIni = automaton.pretty_set()
 	realFin = automaton.pretty_set()
 	realTrans = automaton.pretty_set()
+	realAut = automaton.automaton(alphabet, automaton.pretty_set(), realStates, realIni, realFin, realTrans)
 	for c in classes:
+		if len(c)>1:
+			cp = tuple(c)
+		else:
+			cp = list(c)[0]
 		if Aut.state_is_final(list(c)[0]):
-			realFin.append(tuple(c))
+			realAut.add_final_state(cp)
 		else:
 			if Aut.state_is_initial(list(c)[0]):
-				realIni.append(tuple(c))
+				realAut.add_initial_state(cp)
 			else:
-				realStates.append(tuple(c))
+				realAut.add_state(cp)
 		for a in alphabet:
-			realTrans.append(tuple(c), a, tuple(classeDe(Aut.delta(a, list(c)[0]), classes)))
-	return automaton.automaton(alphabet, set(), realStates, realIni, realFin, realTrans)
+			if len(classeDe(list(Aut.delta(a, c))[0], classes))>1:
+				cpd = tuple(classeDe(list(Aut.delta(a, c))[0], classes))
+			else:
+				cpd = classeDe(list(Aut.delta(a, c))[0], classes)[0]
+			realAut.add_transition((cp, a, cpd))
+	return realAut
 
 #aut3 = union(aut1, aut2)
 #aut4 = intersection(aut1, aut2)
