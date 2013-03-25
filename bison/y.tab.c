@@ -68,8 +68,8 @@
 /* Line 268 of yacc.c  */
 #line 1 "bison.y"
 
-#include <stdio.h>		
-#include <string.h>
+	#include <stdio.h>		
+	#include <string.h>
 
 
 /* Line 268 of yacc.c  */
@@ -1358,21 +1358,7 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 2:
-
-/* Line 1806 of yacc.c  */
-#line 21 "bison.y"
-    {printf("TEST\n");}
-    break;
-
-  case 3:
-
-/* Line 1806 of yacc.c  */
-#line 22 "bison.y"
-    {printf("TEST2\n");}
-    break;
-
-  case 4:
+        case 4:
 
 /* Line 1806 of yacc.c  */
 #line 25 "bison.y"
@@ -1399,7 +1385,7 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 32 "bison.y"
-    {char* s = malloc(2 * sizeof(char*) + 10 * sizeof(char));
+    {char* s = malloc(10 * sizeof(char*) + 10 * sizeof(char));
 								sprintf(s, "[\".\", [%s, %s]]", (yyvsp[(1) - (2)].str), (yyvsp[(2) - (2)].str));
 								(yyval.str) = s;}
     break;
@@ -1408,7 +1394,7 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 35 "bison.y"
-    {char* s = malloc(2 * sizeof(char*) + 10 * sizeof(char));
+    {char* s = malloc(10 * sizeof(char*) + 10 * sizeof(char));
 								sprintf(s, "[\"+\", [%s, %s]]", (yyvsp[(1) - (3)].str), (yyvsp[(3) - (3)].str));
 								(yyval.str) = s;}
     break;
@@ -1425,14 +1411,14 @@ yyreduce:
 /* Line 1806 of yacc.c  */
 #line 39 "bison.y"
     {char* s = malloc(sizeof(char*) + 9 * sizeof(char));
-								sprintf(s, "[\"*\", [%s]]", (yyvsp[(1) - (2)].str));
+								sprintf(s, "[\"*\", %s]", (yyvsp[(1) - (2)].str));
 								(yyval.str) = s;}
     break;
 
 
 
 /* Line 1806 of yacc.c  */
-#line 1436 "y.tab.c"
+#line 1422 "y.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

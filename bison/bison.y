@@ -29,15 +29,15 @@ line: expr EOL	{printf("\nExpression accepted : %s\n", $1);}
 expr: LETTER 					{char* s = malloc(3 * sizeof(char));
 								sprintf(s, "\"%c\"", $1);
 								$$ = s;}
-	| expr expr %prec CONCAT	{char* s = malloc(2 * sizeof(char*) + 10 * sizeof(char));
+	| expr expr %prec CONCAT	{char* s = malloc(10 * sizeof(char*) + 10 * sizeof(char));
 								sprintf(s, "[\".\", [%s, %s]]", $1, $2);
 								$$ = s;}
-	| expr '+'  expr 			{char* s = malloc(2 * sizeof(char*) + 10 * sizeof(char));
+	| expr '+'  expr 			{char* s = malloc(10 * sizeof(char*) + 10 * sizeof(char));
 								sprintf(s, "[\"+\", [%s, %s]]", $1, $3);
 								$$ = s;}
 	| '(' expr ')'				{$$ = $2;}
 	| expr '*'					{char* s = malloc(sizeof(char*) + 9 * sizeof(char));
-								sprintf(s, "[\"*\", [%s]]", $1);
+								sprintf(s, "[\"*\", %s]", $1);
 								$$ = s;}
 	;
 
