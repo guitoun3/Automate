@@ -25,6 +25,16 @@ aut2 = automaton.automaton(
 
 	)
 
+autNonComplet = automaton.automaton(
+	epsilons = ['0'],
+	states = [1,2,3],
+	initials = [1],
+	finals = [3],
+	transitions = [
+		(1, 'a', 2), (2, 'b', 3), (1, 'c', 3)
+		]
+	)
+
 autNonDeter = automaton.automaton(
 	epsilons = ['0'],
 	states = [1,2],
@@ -70,6 +80,7 @@ autNonMini = automaton.automaton(
 
 # Le puits n'est cree que si l'automate n'est pas deja complet
 def completer(Aut):
+	Aut.renumber_the_states()
 	puits = Aut.get_maximal_id()+1
 	isComplet = True
 
@@ -396,10 +407,270 @@ def minimiser(Aut):
 			realAut.add_transition((cp, a, cpd))
 	return realAut
 
+def thomson_union(aut1, aut2):
+	new_aut1 = aut1.clone()
+	new_aut1 = new_aut1.get_renumbered_automaton()
+	new_aut2 = aut2.clone()
+	new_aut2 = new_aut2.get_renumbered_automaton()
+
+	#Renumerote aut2 pour eviter des conflits si des etats ont le meme nom
+	def renumber(obj):
+		return obj+new_aut1.get_maximal_id()
+
+	new_aut2.map(renumber)
+
+	new_initial = new_aut2.get_maximal_id()+1
+	new_final = new_aut2.get_maximal_id()+2
+
+	new_aut = automaton.automaton(epsilons = ['0'],
+									states = [],
+									initials = [new_initial],
+									finals = [new_final],
+									transitions = [])
+
+	#Ajout des etats de aut1 et aut2 dans new_aut
+	new_aut.add_states(new_aut1.get_states())
+	new_aut.add_states(new_aut2.get_states())
+
+	#Ajout des transitions de aut1 et aut2 dans new_aut
+	new_aut.add_transitions(new_aut1.get_transitions())
+	new_aut.add_transitions(new_aut2.get_transitions())
+
+	#Epsilon transition du nouvel initial vers les anciens initiaux de aut1 et aut2
+	new_aut.add_transition((new_initial, '0', list(new_aut1.get_initial_states())[0]))
+	new_aut.add_transition((new_initial, '0', list(new_aut2.get_initial_states())[0]))
+
+	#Epsilon transition des anciens finaux de aut1 et aut2 vers new_aut
+	new_aut.add_transition((list(new_aut1.get_final_states())[0], '0', new_final))
+	new_aut.add_transition((list(new_aut2.get_final_states())[0], '0', new_final))
+
+	return new_aut
+
+def thomson_produit(aut1, aut2):
+	new_aut1 = aut1.clone()
+	new_aut1 = new_aut1.get_renumbered_automaton()
+	new_aut2 = aut2.clone()
+	new_aut2 = new_aut2.get_renumbered_automaton()
+
+	#Renumerote aut2 pour eviter des conflits si des etats ont le meme nom
+	def renumber(obj):
+		return obj+new_aut1.get_maximal_id()
+
+	new_aut2.map(renumber)
+
+	new_aut = automaton.automaton(epsilons = ['0'],
+									states = [],
+									initials = [list(new_aut1.get_initial_states())[0]],
+									finals = [list(new_aut2.get_final_states())[0]],
+									transitions = [])
+
+
+	#Ajout des etats de aut1 et aut2 dans new_aut
+	new_aut.add_states(new_aut1.get_states())
+	new_aut.add_states(new_aut2.get_states())
+
+	#Ajout des transitions de aut1 et aut2 dans new_aut
+	new_aut.add_transitions(new_aut1.get_transitions())
+	new_aut.add_transitions(new_aut2.get_transitions())
+	
+	new_aut1_final = list(new_aut1.get_final_states())[0]
+	new_aut2_initial = list(new_aut2.get_initial_states())[0]
+
+	#Epsilon transition new_aut1_final vers new_aut2_initial
+	new_aut.add_transition((new_aut1_final, '0', new_aut2_initial))
+
+	return new_aut
+
+
+
+def thomson_etoile(aut):
+	aut = aut.get_renumbered_automaton()
+
+	new_initial = aut.get_maximal_id()+1
+	new_final = aut.get_maximal_id()+2
+
+	new_aut = automaton.automaton(epsilons = ['0'],
+									states = [],
+									initials = [new_initial],
+									finals = [new_final],
+									transitions = [])
+
+	ancien_final = list(aut.get_final_states())[0]
+	ancien_initial = list(aut.get_initial_states())[0]
+
+	#Ajout epsilon transition du final vers l'initial
+	new_aut.add_transition((ancien_final, '0', ancien_initial))
+
+	#Ajout epsilon transition nouvel initial vers ancien initial
+	new_aut.add_transition((new_initial, '0', ancien_initial))
+
+	#Ajout epsilon transition ancien final vers nouveau final
+	new_aut.add_transition((ancien_final, '0', new_final))
+	
+	#Ajout epsilon transition nouvel initial vers nouveau final
+	new_aut.add_transition((new_initial, '0', new_final))
+
+	#Copie des etats
+	new_aut.add_states(aut.get_states())
+
+	#Copie des transitions
+	new_aut.add_transitions(aut.get_transitions())
+
+	return new_aut
+
+
+def thomson_char(expr):
+	return automaton.automaton(
+		epsilons = ['0'],
+		states = [1,2],
+		initials = [1],
+		finals = [2],
+		transitions = [(1, expr, 2)])
+
+
+# def thomson_epsilon():
+# 	return automaton.automaton(
+# 		epsilons = ['0'],
+# 		states = [1,2],
+# 		initials = [1],
+# 		finals = [2],
+# 		transitions = [(1, '0', 2)])
+
+
+def expression_vers_automate(expr):
+	i = 1
+
+	for item in expr:
+		if type(item) != list:
+			if item == "*":
+				"""
+				Traitement de l'etoile
+				"""
+				aut = expression_vers_automate(expr[i:][0])
+				return thomson_etoile(aut)
+			elif item == "+":
+				"""
+				Traitement de l'union
+				"""
+				arg = expr[i:][0]
+
+				aut = expression_vers_automate(arg[0])
+
+				"""
+				Parcours la liste pour unir les elements deux a deux
+				"""
+				for j in range(1, len(arg)):
+					if type(arg[j]) == list:
+						p_aut = expression_vers_automate(arg[j])
+					else:
+						p_aut = thomson_char(arg[j])
+
+					aut = thomson_union(aut, p_aut)
+
+				return aut
+			elif item == ".":
+				#Traitement du produit
+				arg = expr[i:][0]
+
+				aut = expression_vers_automate(arg[0])
+
+				#Parcours la liste des elements pour effectuer le produit des automates deux a deux
+				for j in range(1, len(arg)):
+					if type(arg[j]) == list:
+						p_aut = expression_vers_automate(arg[j])
+					else:
+						p_aut = thomson_char(arg[j])
+
+					aut = thomson_produit(aut, p_aut)
+				return aut
+			else:
+				return thomson_char(item)
+
+		i += 1
+
+"""
+Exemple 1.
+Rendre un automate complet
+"""
+# autNonComplet.display()
+# autCompleter = completer(autNonComplet)
+# autCompleter.display()
+
+"""
+Exemple 2.
+Faire l'union de 2 automates
+"""
+# aut1.display()
+# aut2.display()
+# autUnion = union(aut1, aut2)
+# autUnion.display()
+
+"""
+Exemple 3.
+Faire l'intersection de 2 automates
+"""
+# aut1.display()
+# aut2.display()
+# autIntersect = intersection(aut1, aut2)
+# autIntersect.display()
+
+"""
+Exemple 4.
+Calcul de l'automate miroir
+"""
+# aut1.display()
+# autMiroir = miroir(aut1)
+# autMiroir.display()
+
+
+"""
+Exemple 5.
+Determinisation d'un automate
+"""
+# autNonDeter.display()
+# autDeterministe = determinisation(autNonDeter)
+# autDeterministe.display()
+
+
+"""
+Exemple 6.
+Complement du langage reconnu par un automate
+"""
+# complementAut.display()
+# complementAut = complement(complementAut)
+# complementAut.display()
+
+
+"""
+Exemple 7.
+Minimisation d'un automate
+"""
+# autNonMini.display()
+# autMini = minimiser(autNonMini)
+# autMini.display()
+
+
+"""
+Exemple 8.1
+Expression vers automate
+"""
+# expr = ["*", ["+", ["a", [".", [["*", "b"], "a"]]]]]  #(a+b*a)*
+# t = expression_vers_automate(expr)
+# t.display()
+
+"""
+Exemple 8.2
+Expression vers automate
+"""
+# expr2 = [".", [["*", "a"], ["*", ["+", ["b", [".", ["c", "d"]]]]]]]  #a*(b+cd)*
+# t = expression_vers_automate(expr2)
+# t.display()
+
+
 #aut3 = union(aut1, aut2)
 #aut4 = intersection(aut1, aut2)
 #aut5 = miroir(aut1)
-aut6 = minimiser(autNonMini)
+# aut6 = minimiser(autNonMini)
 #aut7 = determinisation(autNonDeter)
 
 #aut11fig3 = determinisation(aut11fig3)
@@ -411,6 +682,6 @@ aut6 = minimiser(autNonMini)
 #aut1.display()
 
 #autNonMini.display()
-aut6.display()
+# aut6.display()
 
 #aut5.display()
