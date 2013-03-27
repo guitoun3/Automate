@@ -249,7 +249,7 @@ def determinisation(Aut):
 	
 	#Copie la variable de initial au lieu d'utiliser un pointeur
 	states = set(initial[:])
-	print states
+
 	#Ajout des nouveaux etats
 	i = 0
 	while i < len(states):
@@ -257,16 +257,13 @@ def determinisation(Aut):
 		if type(setState).__name__ == 'int':
 			setState = [setState]
 
-		print "setState = ", setState
 
 		for alpha in alphabet:
 			new_state = tuple()
 			for state in setState:
 				for access_state in Aut.delta(alpha, [state], True):
-					print "\t\t\taccess = ", access_state
 					if access_state not in new_state:
 						new_state = new_state + (access_state,)
-						print "\t\t\tOK"
 				
 			if len(new_state) > 0:
 				if len(new_state) == 1:
@@ -274,27 +271,8 @@ def determinisation(Aut):
 
 				states.add(new_state)
 
-		"""for state in setState:
-			print "\tstate = ", state
-			for alpha in alphabet:
-				print "\t\tal = ", alpha
-				new_state = tuple()
-
-				for access_state in Aut.delta(alpha, [state], True):
-					print "\t\t\taccess = ", access_state
-					if access_state not in new_state:
-						new_state = new_state + (access_state,)
-						print "\t\t\tOK"
-				
-				if len(new_state) > 0:
-					if len(new_state) == 1:
-						new_state = new_state[0]
-
-					states.add(new_state)"""
-
 		i += 1
 
-	print states	
 	#Ajout des etats finaux
 	for setState in states:
 		if type(setState).__name__ == 'int':
@@ -652,7 +630,7 @@ Minimisation d'un automate
 
 """
 Exemple 8.1
-Expression vers automate
+Expression vers automate (a+b*a)*
 """
 # expr = ["*", ["+", ["a", [".", [["*", "b"], "a"]]]]]  #(a+b*a)*
 # t = expression_vers_automate(expr)
@@ -660,11 +638,28 @@ Expression vers automate
 
 """
 Exemple 8.2
-Expression vers automate
+Expression vers automate a*(b+cd)*
 """
 # expr2 = [".", [["*", "a"], ["*", ["+", ["b", [".", ["c", "d"]]]]]]]  #a*(b+cd)*
 # t = expression_vers_automate(expr2)
 # t.display()
+
+"""
+Exemple 8.3
+Expression vers automate ab+cd
+"""
+# expr3 = ["+", [[".", ["a", "b"]], [".", ["c", "d"]]]]
+# t = expression_vers_automate(expr3)
+# t.display()
+
+"""
+Exemple 8.4
+Expression vers automate a+b+(cd)*
+"""
+# expr4 = ["+", ["a", "b", ["*", [".", ["c", "d"]]]]]
+# t = expression_vers_automate(expr4)
+# t.display()
+
 
 
 #aut3 = union(aut1, aut2)

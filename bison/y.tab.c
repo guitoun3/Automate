@@ -428,7 +428,7 @@ static const yytype_int8 yyrhs[] =
 static const yytype_uint8 yyrline[] =
 {
        0,    21,    21,    22,    25,    26,    29,    32,    35,    38,
-      39
+      41
 };
 #endif
 
@@ -1376,7 +1376,7 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 29 "bison.y"
-    {char* s = malloc(3 * sizeof(char));
+    {char* s = malloc(sizeof(char) +2);
 								sprintf(s, "\"%c\"", (yyvsp[(1) - (1)].character));
 								(yyval.str) = s;}
     break;
@@ -1385,7 +1385,7 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 32 "bison.y"
-    {char* s = malloc(10 * sizeof(char*) + 10 * sizeof(char));
+    {char* s = malloc((strlen((yyvsp[(1) - (2)].str)) + strlen((yyvsp[(2) - (2)].str))) * sizeof(char) +11);
 								sprintf(s, "[\".\", [%s, %s]]", (yyvsp[(1) - (2)].str), (yyvsp[(2) - (2)].str));
 								(yyval.str) = s;}
     break;
@@ -1394,7 +1394,7 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 35 "bison.y"
-    {char* s = malloc(10 * sizeof(char*) + 10 * sizeof(char));
+    {char* s = malloc((strlen((yyvsp[(1) - (3)].str)) + strlen((yyvsp[(3) - (3)].str))) * sizeof(char) +11);
 								sprintf(s, "[\"+\", [%s, %s]]", (yyvsp[(1) - (3)].str), (yyvsp[(3) - (3)].str));
 								(yyval.str) = s;}
     break;
@@ -1403,14 +1403,16 @@ yyreduce:
 
 /* Line 1806 of yacc.c  */
 #line 38 "bison.y"
-    {(yyval.str) = (yyvsp[(2) - (3)].str);}
+    {char* s = malloc((strlen((yyvsp[(2) - (3)].str))) * sizeof(char) +2);
+								sprintf(s, "[%s]", (yyvsp[(2) - (3)].str));
+								(yyval.str) = s;}
     break;
 
   case 10:
 
 /* Line 1806 of yacc.c  */
-#line 39 "bison.y"
-    {char* s = malloc(sizeof(char*) + 9 * sizeof(char));
+#line 41 "bison.y"
+    {char* s = malloc(strlen((yyvsp[(1) - (2)].str)) * sizeof(char) +7);
 								sprintf(s, "[\"*\", %s]", (yyvsp[(1) - (2)].str));
 								(yyval.str) = s;}
     break;
@@ -1418,7 +1420,7 @@ yyreduce:
 
 
 /* Line 1806 of yacc.c  */
-#line 1422 "y.tab.c"
+#line 1424 "y.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1649,7 +1651,7 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 44 "bison.y"
+#line 46 "bison.y"
 
 
 yyerror(char* msg){

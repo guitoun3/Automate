@@ -42,4 +42,5 @@ def parse(s, alphabet):
 
 	return l
 
-print parse(raw_input(), "abcdef")
+# print parse(raw_input(), "abcdef")
+print parse("a+b", "abcdef")
