@@ -385,7 +385,7 @@ def minimiser(Aut):
 			realAut.add_transition((cp, a, cpd))
 	return realAut
 
-def thomson_union(aut1, aut2):
+def thompson_union(aut1, aut2):
 	new_aut1 = aut1.clone()
 	new_aut1 = new_aut1.get_renumbered_automaton()
 	new_aut2 = aut2.clone()
@@ -424,7 +424,7 @@ def thomson_union(aut1, aut2):
 
 	return new_aut
 
-def thomson_produit(aut1, aut2):
+def thompson_produit(aut1, aut2):
 	new_aut1 = aut1.clone()
 	new_aut1 = new_aut1.get_renumbered_automaton()
 	new_aut2 = aut2.clone()
@@ -461,7 +461,7 @@ def thomson_produit(aut1, aut2):
 
 
 
-def thomson_etoile(aut):
+def thompson_etoile(aut):
 	aut = aut.get_renumbered_automaton()
 
 	new_initial = aut.get_maximal_id()+1
@@ -497,7 +497,7 @@ def thomson_etoile(aut):
 	return new_aut
 
 
-def thomson_char(expr):
+def thompson_char(expr):
 	return automaton.automaton(
 		epsilons = ['0'],
 		states = [1,2],
@@ -506,7 +506,7 @@ def thomson_char(expr):
 		transitions = [(1, expr, 2)])
 
 
-# def thomson_epsilon():
+# def thompson_epsilon():
 # 	return automaton.automaton(
 # 		epsilons = ['0'],
 # 		states = [1,2],
@@ -525,7 +525,7 @@ def expression_vers_automate(expr):
 				Traitement de l'etoile
 				"""
 				aut = expression_vers_automate(expr[i:][0])
-				return thomson_etoile(aut)
+				return thompson_etoile(aut)
 			elif item == "+":
 				"""
 				Traitement de l'union
@@ -541,9 +541,9 @@ def expression_vers_automate(expr):
 					if type(arg[j]) == list:
 						p_aut = expression_vers_automate(arg[j])
 					else:
-						p_aut = thomson_char(arg[j])
+						p_aut = thompson_char(arg[j])
 
-					aut = thomson_union(aut, p_aut)
+					aut = thompson_union(aut, p_aut)
 
 				return aut
 			elif item == ".":
@@ -557,12 +557,12 @@ def expression_vers_automate(expr):
 					if type(arg[j]) == list:
 						p_aut = expression_vers_automate(arg[j])
 					else:
-						p_aut = thomson_char(arg[j])
+						p_aut = thompson_char(arg[j])
 
-					aut = thomson_produit(aut, p_aut)
+					aut = thompson_produit(aut, p_aut)
 				return aut
 			else:
-				return thomson_char(item)
+				return thompson_char(item)
 
 		i += 1
 

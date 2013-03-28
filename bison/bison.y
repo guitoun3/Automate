@@ -19,7 +19,7 @@
 
 %%
 input: /* empty */
-	| line input
+	| input line
 	;
 
 line: expr EOL	{printf("\nExpression accepted : %s\n", $1);}
