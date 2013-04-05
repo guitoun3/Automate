@@ -85,6 +85,13 @@ autNonMini2 = automaton.automaton(
 	finals = [4, 5],
 	transitions = [(1,'a',3), (1,'b',5), (3,'a',2), (3,'b',4), (2,'a',4), (2,'b',4), (4,'a',5), (4,'b',5), (5,'a',5), (5,'b',5)]
 	)
+autNonDeter2 = automaton.automaton(
+	epsilons = [],
+	states = [1,2,3],
+	initials = [1],
+	finals = [1],
+	transitions = [(1,'a',1), (1,'a',2), (1,'a',3), (1,'b',3), (2,'a',2), (2,'b',2), (2,'a',1), (2,'b',1), (3,'b',1), (3,'a',2), (3,'b',2)]
+	)
 # Le puits n'est cree que si l'automate n'est pas deja complet
 def completer(Aut):
 	Aut.renumber_the_states()
@@ -335,9 +342,7 @@ def classeDe(state, classes):
 
 def minimiser(Aut):
 	Aut = determinisation(Aut)
-	Aut.display()
 	Aut = completer(Aut)
-	Aut.display()
 	classes = list()
 	finaux = list()
 	nf = list()
@@ -633,8 +638,8 @@ Complement du langage reconnu par un automate
 Exemple 7.
 Minimisation d'un automate
 """
-autNonMini2.display()
-autMini = minimiser(autNonMini2)
+autNonDeter2.display()
+autMini = minimiser(autNonDeter2)
 autMini.display()
 
 
